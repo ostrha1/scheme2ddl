@@ -1,0 +1,245 @@
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pom.xml	(date 1474027715000)
++++ pom.xml	(date 1474031333000)
+@@ -90,10 +90,6 @@
+             <artifactId>spring-boot-starter-jdbc</artifactId>
+         </dependency>
+         <dependency>
+-            <groupId>org.springframework.boot</groupId>
+-            <artifactId>spring-boot-starter-logging</artifactId>
+-        </dependency>
+-        <dependency>
+             <groupId>commons-io</groupId>
+             <artifactId>commons-io</artifactId>
+             <version>2.5</version>
+Index: src/main/resources/logback.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/logback.xml	(date 1474027715000)
++++ src/main/resources/logback.xml	(date 1474031333000)
+@@ -1,5 +1,18 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <configuration>
+-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+-    <logger name="org.springframework" level="INFO"/>
++
++    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
++        <encoder>
++            <pattern>%msg%n</pattern>
++        </encoder>
++    </appender>
++
++    <logger name="org.springframework" level="warn">
++        <appender-ref ref="STDOUT"/>
++    </logger>
++
++    <root level="info">
++        <appender-ref ref="STDOUT"/>
++    </root>
++
+ </configuration>
+\ No newline at end of file
+Index: src/main/java/com/googlecode/scheme2ddl/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/googlecode/scheme2ddl/Main.java	(date 1474027715000)
++++ src/main/java/com/googlecode/scheme2ddl/Main.java	(date 1474031333000)
+@@ -2,8 +2,8 @@
+ 
+ import com.googlecode.scheme2ddl.dao.ConnectionDao;
+ import oracle.jdbc.pool.OracleDataSource;
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+@@ -24,7 +24,7 @@
+  */
+ public class Main {
+ 
+-    private static final Log log = LogFactory.getLog(Main.class);
++    private static final Logger log = LoggerFactory.getLogger(Main.class);
+     public static String outputPath = null;
+     public static int parallelCount = 4;
+     private static boolean justPrintUsage = false;
+Index: src/main/java/com/googlecode/scheme2ddl/UserObjectReader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/googlecode/scheme2ddl/UserObjectReader.java	(date 1474027715000)
++++ src/main/java/com/googlecode/scheme2ddl/UserObjectReader.java	(date 1474031333000)
+@@ -2,8 +2,8 @@
+ 
+ import com.googlecode.scheme2ddl.dao.UserObjectDao;
+ import com.googlecode.scheme2ddl.domain.UserObject;
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ import org.springframework.batch.item.ItemReader;
+ import org.springframework.batch.item.NonTransientResourceException;
+ import org.springframework.batch.item.ParseException;
+@@ -22,7 +22,7 @@
+  */
+ public class UserObjectReader implements ItemReader<UserObject> {
+ 
+-    private static final Log log = LogFactory.getLog(UserObjectReader.class);
++    private static final Logger log = LoggerFactory.getLogger(UserObjectReader.class);
+     private List<UserObject> list;
+ 
+     @Autowired
+Index: src/main/java/com/googlecode/scheme2ddl/UserObjectWriter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/googlecode/scheme2ddl/UserObjectWriter.java	(date 1474027715000)
++++ src/main/java/com/googlecode/scheme2ddl/UserObjectWriter.java	(date 1474031333000)
+@@ -4,8 +4,8 @@
+ import com.googlecode.scheme2ddl.domain.UserObject;
+ import org.apache.commons.io.FileUtils;
+ import org.apache.commons.io.FilenameUtils;
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ import org.springframework.batch.item.ItemWriter;
+ 
+ import java.io.File;
+@@ -17,7 +17,7 @@
+  */
+ public class UserObjectWriter implements ItemWriter<UserObject> {
+ 
+-    private static final Log log = LogFactory.getLog(UserObjectWriter.class);
++    private static final Logger log = LoggerFactory.getLogger(UserObjectWriter.class);
+     private String outputPath;
+ 
+ 
+Index: src/main/java/com/googlecode/scheme2ddl/FileNameConstructor.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/googlecode/scheme2ddl/FileNameConstructor.java	(date 1474027715000)
++++ src/main/java/com/googlecode/scheme2ddl/FileNameConstructor.java	(date 1474031333000)
+@@ -1,8 +1,8 @@
+ package com.googlecode.scheme2ddl;
+ 
+ import com.googlecode.scheme2ddl.domain.UserObject;
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ import org.springframework.beans.factory.InitializingBean;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Component;
+@@ -18,7 +18,7 @@
+  */
+ public class FileNameConstructor implements InitializingBean {
+ 
+-    private static final Log log = LogFactory.getLog(FileNameConstructor.class);
++    private static final Logger log = LoggerFactory.getLogger(FileNameConstructor.class);
+     public static String kw_schema_lower = "schema";
+     public static String kw_type_lower = "type";
+     public static String kw_types_plural_lower = "types_plural";
+Index: src/main/java/com/googlecode/scheme2ddl/UserObjectJobRunner.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/googlecode/scheme2ddl/UserObjectJobRunner.java	(date 1474027715000)
++++ src/main/java/com/googlecode/scheme2ddl/UserObjectJobRunner.java	(date 1474031333000)
+@@ -1,8 +1,8 @@
+ package com.googlecode.scheme2ddl;
+ 
+ import oracle.jdbc.pool.OracleDataSource;
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ import org.springframework.batch.core.*;
+ import org.springframework.batch.core.launch.JobLauncher;
+ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+@@ -17,7 +17,7 @@
+  * @since Date: 22.10.2012
+  */
+ public class UserObjectJobRunner {
+-    protected static final Log logger = LogFactory.getLog(UserObjectJobRunner.class);
++    protected static final Logger logger = LoggerFactory.getLogger(UserObjectJobRunner.class);
+     private JobLauncher launcher;
+ 
+     int start(ConfigurableApplicationContext context, boolean launchedByDBA, String objectFilter, String typeFilter, String typeFilterMode) throws Exception {
+Index: src/main/java/com/googlecode/scheme2ddl/UserObjectProcessor.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/googlecode/scheme2ddl/UserObjectProcessor.java	(date 1474027715000)
++++ src/main/java/com/googlecode/scheme2ddl/UserObjectProcessor.java	(date 1474031333000)
+@@ -4,8 +4,8 @@
+ import com.googlecode.scheme2ddl.domain.UserObject;
+ import com.googlecode.scheme2ddl.exception.CannotGetDDLException;
+ import com.googlecode.scheme2ddl.exception.NonSkippableException;
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ import org.springframework.batch.item.ItemProcessor;
+ 
+ import java.util.Map;
+@@ -19,7 +19,7 @@
+  */
+ public class UserObjectProcessor implements ItemProcessor<UserObject, UserObject> {
+ 
+-    private static final Log log = LogFactory.getLog(UserObjectProcessor.class);
++    private static final Logger log = LoggerFactory.getLogger(UserObjectProcessor.class);
+     private UserObjectDao userObjectDao;
+     private DDLFormatter ddlFormatter;
+     private FileNameConstructor fileNameConstructor;
+@@ -87,7 +87,7 @@
+             }
+             return ddlFormatter.formatDDL(res);
+         } catch (Exception e) {
+-            log.warn(String.format("Cannot get DDL for object %s with error message %s", userObject, e.getMessage()));
++            log.warn("Cannot get DDL for object {} with error message {}", userObject, e.getMessage());
+             if (stopOnWarning) {
+                 throw new NonSkippableException(e);
+             } else
+Index: src/main/java/com/googlecode/scheme2ddl/dao/UserObjectDaoImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/googlecode/scheme2ddl/dao/UserObjectDaoImpl.java	(date 1474027715000)
++++ src/main/java/com/googlecode/scheme2ddl/dao/UserObjectDaoImpl.java	(date 1474031333000)
+@@ -1,8 +1,8 @@
+ package com.googlecode.scheme2ddl.dao;
+ 
+ import com.googlecode.scheme2ddl.domain.UserObject;
+-import org.apache.commons.logging.Log;
+-import org.apache.commons.logging.LogFactory;
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.dao.DataAccessException;
+ import org.springframework.jdbc.BadSqlGrammarException;
+@@ -24,7 +24,7 @@
+  */
+ public class UserObjectDaoImpl extends JdbcDaoSupport implements UserObjectDao {
+ 
+-    private static final Log log = LogFactory.getLog(UserObjectDaoImpl.class);
++    private static final Logger log = LoggerFactory.getLogger(UserObjectDaoImpl.class);
+     private Map<String, Boolean> transformParams;
+     @Value("#{jobParameters['schemaName']}")
+     private String schemaName;
